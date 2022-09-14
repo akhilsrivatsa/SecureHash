@@ -21,17 +21,25 @@ start() ->
 
 generateRandomString() -> base64:encode(crypto:strong_rand_bytes(8)).  % re:replace(base64:encode(crypto:strong_rand_bytes(8)),"\\W","",[global,{return,binary}]),
 
-%checkLeadingZeros(HashedString, LeadingZeroes, idx) ->
- % io:format("Leading Zeroes function called \n").
+checkLeadingZeros([]) -> true;
+
+checkLeadingZeros([H|T]) ->
+  if H =:= 48 -> checkLeadingZeros(T);
+     true -> false
+  end.
 
 generateHash(LeadingZeros) ->
   RandomString = generateRandomString(),
-  HashInputString = concat([?UFID],RandomString) ,
-  HashOutputString  = binary:decode_unsigned(crypto:hash(sha256 , HashInputString)),
-  io:format("~64.16.0b \n", [HashOutputString]).
-  %generateHash(LeadingZeros).  Used for recursively mining coins. Commen
+  HashInputString = concat([?UFID],RandomString),
+  HashOutputString  = [element(C+1, {$0,$1,$2,$3,$4,$5,$6,$7,$8,$9,$a,$b,$c,$d,$e,$f}) || <<C:4>> <= crypto:hash(sha256,HashInputString)],
+  Substring = string:sub_string(HashOutputString, 1, LeadingZeros),
+  Result = checkLeadingZeros(Substring),
+  if Result -> io:format("Mined String is ~s \n", [HashOutputString]);
+     true -> do_nothing
+  end,
+  generateHash(LeadingZeros). %  Used for recursively mining coins.
 
-startMining(2,LeadingZeros) -> {ok, LeadingZeros};
+startMining(1000,LeadingZeros) -> {ok, LeadingZeros};
 
 startMining(Itr, LeadingZeros) ->
   spawn( fun() -> generateHash(LeadingZeros) end),
