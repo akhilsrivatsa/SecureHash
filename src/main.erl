@@ -40,8 +40,9 @@ handle_info(_Info, State) ->
 
 init(_Args) ->
   process_flag(trap_exit, true),
-  io:format("Secure Hash Server has been intialized~n"),
+  io:format("Secure Hash Application has been intialized~n"),
   {ok, LeadingZeros} = io:read("Enter the required no.of leading zeros: \n"),
+ % server:init_server(),
   spawnMiningActors(1, LeadingZeros).
 
 terminate(_Reason, _State) -> [].
@@ -63,9 +64,10 @@ generateHash(LeadingZeros) ->
     Substring = string:sub_string(HashOutputString, 1, LeadingZeros),
     Result = checkLeadingZeros(Substring),
     if Result -> io:format("Mined String is ~s \n", [HashOutputString]);
-         true -> do_nothing
+         true ->  do_nothing
     end,
-    generateHash(LeadingZeros).
+  generateHash(LeadingZeros).
+
 
 startMining() ->
   receive{LeadingZeroes} ->

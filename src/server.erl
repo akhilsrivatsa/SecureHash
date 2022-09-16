@@ -10,38 +10,14 @@
 -author("akhil").
 
 %% API
--export([init_server/0]).
+-export([init_server/0, local_ip_v4/0]).
 
   init_server() ->
-  io:format("Initializing a server here \n"),
-  My_ip = local_ip_v4(),
-  io:format("Printing my Ip address ~p \n", [My_ip]),
-    inets:start(httpd, [
-    {modules, [
-      mod_alias,
-      mod_auth,
-      mod_esi,
-      mod_actions,
-      mod_cgi,
-      mod_dir,
-      mod_get,
-      mod_head,
-      mod_log,
-      mod_disk_log
-    ]},
+    io:format("Initializing a server here \n"),
+    NodeName = "akhiltest1",
+    io:format("Nodename is ~p~n", [NodeName]),
+    net_kernel:start([NodeName], shortnames).
 
-    {port,8081},
-    {server_name,[My_ip]},
-    {server_root,"D://tmp"},
-    {document_root,"D://tmp/htdocs"},
-    {erl_script_alias, {"/erl", [My_ip]}},
-    {error_log, "error.log"},
-    {security_log, "security.log"},
-    {transfer_log, "transfer.log"},
-
-    {mime_types,[
-      {"html","text/html"}, {"css","text/css"}, {"js","application/x-javascript"} ]}
-  ]).
 
 local_ip_v4() ->
   {ok, Addrs} =  inet:getifaddrs(),
