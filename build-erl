@@ -1,0 +1,1 @@
+erlc -o src/ebin/ src/*.erl
