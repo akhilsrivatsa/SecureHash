@@ -42,7 +42,6 @@ init(_Args) ->
   process_flag(trap_exit, true),
   io:format("Secure Hash Application has been intialized~n"),
   {ok, LeadingZeros} = io:read("Enter the required no.of leading zeros: \n"),
- % server:init_server(),
   spawnMiningActors(1, LeadingZeros).
 
 terminate(_Reason, _State) -> [].
@@ -58,6 +57,7 @@ checkLeadingZeros([H|T]) ->
 
 generateHash(LeadingZeros) ->
 
+    io:format("Mine in progress ~n"),
     RandomString = generateRandomString(),
     HashInputString = concat([?UFID],RandomString),
     HashOutputString  = [element(C+1, {$0,$1,$2,$3,$4,$5,$6,$7,$8,$9,$a,$b,$c,$d,$e,$f}) || <<C:4>> <= crypto:hash(sha256,HashInputString)],
