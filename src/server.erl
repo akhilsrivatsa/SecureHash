@@ -13,23 +13,25 @@
 -export([start/0, listen_to_server_events/2, accept_state/2]).
 -define(PORT, 9000).
 
-
 %Actively listen to all server events.
 listen_to_server_events(UserInput, Instance) ->
   receive
     {print_output_event, HashString, ActorId} ->
-
+      {Total_Wallclock_Time, Wallclock_Time_Since_Last_Call} = statistics(wall_clock),
+      {Total_Run_Time, Time_Since_Last_Call} = statistics(runtime),
       if
-        Instance == "master" -> io:format("Server Printing HashValue ~s mined by actor: ~w ~n", [HashString, ActorId] );
+        Instance == "master" -> io:format("Server Printing HashValue ~s mined by actor: ~w with last call time metric ~p and total time metric ~p ~n", [HashString, ActorId, Time_Since_Last_Call / Wallclock_Time_Since_Last_Call, Total_Run_Time / Total_Wallclock_Time]);
         true ->
-          io:format("Sending Hash Value to Master ~s ~n", [HashString]),
-          {ok, Socket} = gen_tcp:connect({100,64,7,16}, ?PORT, [binary,{active, true}]),%Connect to Ip Address of the server
+          io:format("Sending Hash Value to Master ~s with last call time metric ~p and total time metric ~p ~n", [HashString, Time_Since_Last_Call / Wallclock_Time_Since_Last_Call, Total_Run_Time / Total_Wallclock_Time]),
+          {ok, Socket} = gen_tcp:connect({10,20,0,216}, ?PORT, [binary,{active, true}]),%Connect to Ip Address of the server
           gen_tcp:send(Socket, HashString)
       end,
       listen_to_server_events(UserInput, Instance);
 
-    {print_output_event_client, HashString} -> io:format("Server printing HashValue ~s mined by a client ~n",
-                                                [HashString]),
+    {print_output_event_client, HashString} ->
+      {Total_Wallclock_Time, Wallclock_Time_Since_Last_Call} = statistics(wall_clock),
+      {Total_Run_Time, Time_Since_Last_Call} = statistics(runtime),
+      io:format("Server printing HashValue ~s mined by a client with last call time metric ~p and total time metric ~p ~n", [HashString, Time_Since_Last_Call / Wallclock_Time_Since_Last_Call, Total_Run_Time / Total_Wallclock_Time]),
       listen_to_server_events(UserInput, Instance)
   end.
 
@@ -85,7 +87,7 @@ start() ->
 
     true->
       io:format("Ip Address is ~s ~n", [UserInput]),
-      {ok, Socket} = gen_tcp:connect({100,64,7,16}, 9000, [binary,{active, true}]),%Connect to Ip Address of the server
+      {ok, Socket} = gen_tcp:connect({10,20,0,216}, 9000, [binary,{active, true}]),%Connect to Ip Address of the server
       gen_tcp:send(Socket, "New Client Available"),
       receive
         {tcp,Socket,<<LeadingZeroes>>} ->
