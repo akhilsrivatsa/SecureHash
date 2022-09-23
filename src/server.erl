@@ -85,13 +85,12 @@ start() ->
       PID = spawn(worker, parent_actor, []),
       PID ! {LeadingZeroes, self()};
 
-    %%24.250.146.254
     true->
       {ok, ParsedAddress} = inet:parse_address(UserInput),
       io:format("Ip Address is ~p ~n", [ParsedAddress]),
       {A, B, C, D} = ParsedAddress,
-      io:format("~p ~p ~p ~p", [A, B, C, D]),
-      {ok, Socket} = gen_tcp:connect({24, 250, 146, 254}, 9000, [binary,{active, true}]),%Connect to Ip Address of the server
+      io:format("abcd is ~p ~p ~p ~p ~n", [A, B, C, D]),
+      {ok, Socket} = gen_tcp:connect({A, B, C, D}, 9000, [binary,{active, true}]),%Connect to Ip Address of the server
       gen_tcp:send(Socket, "New Client Available"),
       receive
         {tcp,Socket,<<LeadingZeroes>>} ->
