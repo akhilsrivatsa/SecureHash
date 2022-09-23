@@ -73,7 +73,7 @@ init_tcp(UserInput) ->
 start() ->
 
   % Reading input from user %
-  {ok, UserInput} = io:read("Enter the input ~n"),
+  {ok, UserInput} = io:read("Enter the input (if you are the client, enter the IP Address of the server you want to connect ~n"),
   IsInputIPAddress =  lists:member(hd("."), UserInput),
   if
     IsInputIPAddress == false ->
@@ -85,9 +85,13 @@ start() ->
       PID = spawn(worker, parent_actor, []),
       PID ! {LeadingZeroes, self()};
 
+    %%24.250.146.254
     true->
-      io:format("Ip Address is ~s ~n", [UserInput]),
-      {ok, Socket} = gen_tcp:connect({10,20,0,216}, 9000, [binary,{active, true}]),%Connect to Ip Address of the server
+      {ok, ParsedAddress} = inet:parse_address(UserInput),
+      io:format("Ip Address is ~p ~n", [ParsedAddress]),
+      {A, B, C, D} = ParsedAddress,
+      io:format("~p ~p ~p ~p", [A, B, C, D]),
+      {ok, Socket} = gen_tcp:connect({24, 250, 146, 254}, 9000, [binary,{active, true}]),%Connect to Ip Address of the server
       gen_tcp:send(Socket, "New Client Available"),
       receive
         {tcp,Socket,<<LeadingZeroes>>} ->
