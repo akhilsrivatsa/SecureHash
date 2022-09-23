@@ -15,7 +15,7 @@
 -define( UFID,"akhilsrivatsa;").
 
 
-generateRandomString() -> base64:encode(crypto:strong_rand_bytes(16)).
+generateRandomString() -> base64:encode(crypto:strong_rand_bytes(8)).
 
 mine_coins(LeadingZeroes, Parent) ->
   %io:format("Mine in progress ~n"),
@@ -47,7 +47,7 @@ parent_actor() ->
           PID = spawn(?MODULE, spawn_child_actors, []),
           erlang:monitor(process, PID),    %% Parent acts as a supervisor and monitors its childs.
           PID ! {LeadingZeroes, self()}
-        end, lists:seq(1, 50)),
+        end, lists:seq(1, 10000)),
       parent_actor();
 
     {hash_found, Hash_output, Sender} ->
