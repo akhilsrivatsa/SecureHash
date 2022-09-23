@@ -27,14 +27,15 @@ mine_coins(LeadingZeroes, Parent) ->
   Zero_str = string:right("", LeadingZeroes, $0),
   if
     (Sub_str == Zero_str) ->
-      Parent ! {hash_found, Hash_output, self()};
-    true -> donothing
-  end,
- mine_coins(LeadingZeroes, Parent).
+      Parent ! {hash_found, Hash_output, self(), LeadingZeroes};
+    true ->  mine_coins(LeadingZeroes, Parent)
+  end.
+
 
 spawn_child_actors() ->
   receive {LeadingZeroes, Parent} ->
-    mine_coins(LeadingZeroes, Parent)
+    mine_coins(LeadingZeroes, Parent),
+    spawn_child_actors()
   end.
 
 %Purpose is to supervise all child actors. Child actors do the mining and return the hashed strings.
@@ -47,11 +48,12 @@ parent_actor() ->
           PID = spawn(?MODULE, spawn_child_actors, []),
           erlang:monitor(process, PID),    %% Parent acts as a supervisor and monitors its childs.
           PID ! {LeadingZeroes, self()}
-        end, lists:seq(1, 10000)),
+        end, lists:seq(1, 1)),
       parent_actor();
 
-    {hash_found, Hash_output, Sender} ->
+    {hash_found, Hash_output, Sender, LeadingZeroes} ->
       server_event_listener_process ! {print_output_event, Hash_output, Sender},
+      Sender ! {LeadingZeroes, self()},
       parent_actor()
   end.
 
