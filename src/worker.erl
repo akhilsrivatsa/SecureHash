@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%%% @author akhil
+%%% @author mayur
 %%% @copyright (C) 2022, <COMPANY>
 %%% @doc
 %%%
@@ -7,12 +7,12 @@
 %%% Created : 20. Sept 2022 4:40 PM
 %%%-------------------------------------------------------------------
 -module(worker).
--author("akhil").
+-author("mayur").
 
 %% API
 -import(string,[concat/2]).
 -export([parent_actor/0, spawn_child_actors/0]).
--define( UFID,"akhilsrivatsa;").
+-define( UFID,"mayur").
 
 
 generateRandomString() -> base64:encode(crypto:strong_rand_bytes(8)).
@@ -25,9 +25,12 @@ mine_coins(LeadingZeroes, Parent) ->
   Hash_output  = [element(C+1, {$0,$1,$2,$3,$4,$5,$6,$7,$8,$9,$a,$b,$c,$d,$e,$f}) || <<C:4>> <= crypto:hash(sha256,Hash_input)],
   Sub_str = string:sub_string(Hash_output, 1, LeadingZeroes),
   Zero_str = string:right("", LeadingZeroes, $0),
+
   if
     (Sub_str == Zero_str) ->
-      Parent ! {hash_found, Hash_output, self(), LeadingZeroes};
+      Interim_String = concat([Hash_input], "    "),
+      Final_Output = concat([Interim_String], Hash_output),
+      Parent ! {hash_found, Final_Output, self(), LeadingZeroes};
     true ->  mine_coins(LeadingZeroes, Parent)
   end.
 

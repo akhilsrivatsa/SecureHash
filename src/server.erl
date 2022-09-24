@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%%% @author akhil
+%%% @author mayur
 %%% @copyright (C) 2022, <COMPANY>
 %%% @doc
 %%%
@@ -7,7 +7,7 @@
 %%% Created : 15. Sept 2022 5:01 PM
 %%%-------------------------------------------------------------------
 -module(server).
--author("akhil").
+-author("mayur").
 
 %% API
 -export([start/0, listen_to_server_events/3, accept_state/2]).
@@ -91,7 +91,7 @@ start() ->
 
     true->
       {ok, ParsedAddress} = inet:parse_address(UserInput),
-      io:format("Ip Address is ~s ~n", [ParsedAddress]),
+      io:format("Ip Address is ~p ~n", [ParsedAddress]),
       {ok, Socket} = gen_tcp:connect(ParsedAddress, 9000, [binary,{active, true}]),%Connect to Ip Address of the server
       gen_tcp:send(Socket, "New Client Available"),
       receive
