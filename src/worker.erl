@@ -48,7 +48,7 @@ parent_actor() ->
           PID = spawn(?MODULE, spawn_child_actors, []),
           erlang:monitor(process, PID),    %% Parent acts as a supervisor and monitors its childs.
           PID ! {LeadingZeroes, self()}
-        end, lists:seq(1, 1)),
+        end, lists:seq(1, 10)),
       parent_actor();
 
     {hash_found, Hash_output, Sender, LeadingZeroes} ->
