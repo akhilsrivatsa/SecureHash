@@ -9,13 +9,12 @@ Project Description
 
 **Steps to run the project** - 
 
-1)  Build the project and run it using the erlang console configuration.
-2) Start the server with the command server:start() in the console.
-3) Server/s Implementation
-4) Enter the number of leading zeros which should be present in the hash string for mining.
-5) This will start the master/server and will start mining the coins.
-6) Client/s or worker/s Implementation (Distributed)
-7) Enter the server’s IP address where the master program is running.
+1)  Build the project and run it using the erlang console run configuration in IntelliJ IDEA with just default (zero) arguments and default settings.
+2) Start the server with the command server:start() in the erlang console, the input format is different for server and client machines / instances as stated below.
+3) Enter the number of leading zeros which should be present in the hash string for mining. (for Server machine)
+4) This will start the master/server and will start mining the coins in the server.
+5) Enter the server’s IP address where the master program is running. (for Client(s) machine)
+6) This will start the slave/client and will start mining the coins and sends the output to the server whenever a valid coin is found.
 
 **Input Format** - 
 
@@ -51,15 +50,15 @@ servers. Also, in our system the server and worker program are installed/present
 Project ReadMe Questions/Tasks: 
 1. Size of the work unit that you determined results in the best performance for your implementation and an explanation of how you determined it. The size of the work unit refers to the number of sub-problems that a worker gets in a single request from the boss. 
 
-   **Ans**. In our system, each worker has the following tasks/sub-problem
+   **Ans**. In our system, each worker has the following tasks/sub-problems
 
     -> Connecting to the server (low load)
 
     -> Receiving the input, i.e, no of Leading zeros (low load)
     
-    -> Execute the parallelized mining process (high load)
+    -> Executing the parallelized mining process (high load)
 
-    -> Returing the output to the server (low load)
+    -> Validating and returing the output to the server (low load)
 
     After testing various design and work distributions between the server and the worker program and an exhaustive trial and error process, we believe for our application which uses TCP connection this is the most optimal structure of the worker program. So according the size of work here is 4.
 
