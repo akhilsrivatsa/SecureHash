@@ -188,8 +188,8 @@ Process finished with exit code 0
 
 3. The running time for the above is reported by time for the above and report the time.  The ratio of CPU time to REAL TIME tells you how many cores were effectively used in the computation.  If you are close to 1 you have almost no parallelism (points will be subtracted).
 
-    **Ans**. The ratio of total CPU Runtime / total Real Time we got approximately around 10.5
-at the time of termination, but the trajectory was increasing and hence it might 
+    **Ans**. The ratio of total CPU Runtime / total Real Time we got was approximately around 10.5
+at the time of termination of the program, but the trajectory was increasing and hence it might 
 be greater than 10.5 depending on the time the program is run.
 
 
