@@ -225,6 +225,7 @@ Enter the input (Number of leading zeros if you are the server or The IP Address
 2> *** Terminating erlang (nonode@nohost)
 
 **Screenshot of server console**
+
 ![](server side.jpg)
 
 **Client Side**
@@ -266,6 +267,7 @@ Enter the input (Number of leading zeros if you are the server or The IP Address
 2> Sending Coin to Master mayur;D07otGn50MMt3OZN7ILfQB7ns/Q6BZcYmvc5kd0B0RY    0000b735fbd0b09a0caad5652626574e62c9f13f60fcf13e05e97b80329b8044 with performance metrics : 4.677934907925494
 
 **Screenshot of client console**
+
 ![](client side.jpeg)
 
 3. The running time for the above is reported by time for the above and report the time.  The ratio of CPU time to REAL TIME tells you how many cores were effectively used in the computation.  If you are close to 1 you have almost no parallelism (points will be subtracted).
@@ -279,7 +281,25 @@ be greater than 10.5 depending on the time the program is run.
 
    **Ans**. Our application returns all the coins with leading zeros equal to the input, hence all the coins mined will contain the no of leading
    zeros given in the input. The highest input successfully hashed was 7.
+   Eshell V13.0.4  (abort with ^G)
 
+1> server:start().
+
+Enter the input (Number of leading zeros if you are the server or The IP Address of the server if you are the client)
+
+"7".
+
+{7,<0.79.0>}
+   
+2> Server mined Coin : mayur;xTcPx0cuSas8yluPKSrGlveEwCTuMr5+bQxLrfDVQ0g    0000000d75649e9a72e909a6062cab0ce90c309dd73e006a1afd685cd323ca15 mined by actor: <0.401.0> with performance metrics : 0.06694078947368422
+
+2> Server mined Coin : mayur;0aZUTzMEtxJaH7dSL+JXGs2gM7wh9sBepHwUI89+FyQ    00000000c9a1d72113076b3f71506b6270afe1e480078d2f3f745ee6d2d6c269 mined by actor: <0.92.0> with performance metrics : 11.294591609632022
+
+2> Server mined Coin : mayur;+2rHLyx2szyPonL4letZ1GKzdb/CWKTBP8ihJfB7SwQ    0000000f97e2c656ffd789203c1930b41dcbf09a9c0f21369419a8733a0b2749 mined by actor: <0.94.0> with performance metrics : 11.347529473087123
+
+**ScreenShot of console for input 7**
+
+![](input 7.png)
 
 5. The largest number of working machines you were able to run your code with.
 
