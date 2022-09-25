@@ -12,7 +12,7 @@
 %% API
 -import(string,[concat/2]).
 -export([parent_actor/0, spawn_child_actors/0]).
--define( UFID,"mayur").
+-define( UFID,"mayur;").
 
 
 generate_random_string() -> base64:encode_to_string(crypto:strong_rand_bytes(32)).
@@ -29,7 +29,7 @@ mine_coins(LeadingZeroes, Parent) ->
 
   if
     (Sub_str == Zero_str) ->
-      Interim_String = concat([Hash_input], ";    "),
+      Interim_String = concat([Hash_input], "    "),
       Final_Output = concat([Interim_String], Hash_output),
       Parent ! {hash_found, Final_Output, self(), LeadingZeroes};
     true ->  mine_coins(LeadingZeroes, Parent)

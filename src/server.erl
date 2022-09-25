@@ -51,7 +51,7 @@ handler(ASocket, UserInput) ->
         true ->
           io:format("Ping received from a client with Hashed String ~s ~n", [BinaryMsg]),
           server_event_listener_process ! {print_output_event_client, BinaryMsg} ,
-          gen_tcp:send(ASocket, "Thanks")
+          gen_tcp:send(ASocket, "Hash Received")
       end,
       handler(ASocket, UserInput)
   end.
