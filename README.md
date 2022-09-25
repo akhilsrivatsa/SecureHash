@@ -3,9 +3,15 @@ DOSP Project 1.
 
 Group members - 
 
-Mayur Reddy Junnuthula (UFID - 36921238), Akhil Srivatsa (UFID - 80826297)
+1) Mayur Reddy Junnuthula (UFID - 36921238)
+2) Akhil Srivatsa (UFID - 80826297)
 
-Project Description
+Project Description -
+
+
+Bitcoins (seehttp://en.wikipedia.org/wiki/Bitcoin) are the most popular crypto-currency in common use. At their heart, bitcoins use the hardness of cryptographic hashing (for a reference seehttp://en.wikipedia.org/wiki/Cryptographichashfunction)to ensure a limited “supply” of coins.  In particular, the key component in a bit-coin is an input that, when “hashed” produces an output smaller than a target value.  In practice, the comparison values have leading  0’s, thus the bitcoin is required to have a given number of leading 0’s (to ensure 3 leading 0’s, you look for hashes smaller than0x001000... or smaller or equal to 0x000ff....The hash you are required to use is SHA-256.  You can check your version against this online hasher:http://www.xorbin.com/tools/sha256-hash-calculator. For example, when the text “COP5615 is a boring class” is hashed, the value fb4431b6a2df71b6cbad961e08fa06ee6fff47e3bc14e977f4b2ea57caee48a4 is obtained.  For the coins, you find, check your answer with this calculator to ensure correctness. The goal of this first project is to use Erlang and the Actor Model to build a good solution to this problem that runs well on multi-core machines.
+
+
 
 **Steps to run the project** - 
 
@@ -19,7 +25,7 @@ Project Description
 **Input Format** - 
 
 The input format is a number or an IP Address enclosed within double quotes.
-For example, Input for server - "4", Input for client - "127.0.0.1".
+For example, Input for server - "4", Input for client - "127.0.0.1".(The Ip Address of server)
 
 **Working** - 
 
@@ -46,25 +52,46 @@ printed by the server/master.
 
 **Note** - There can be multiple clients which can be connected to a server, and multiple 
 instances of the application running inside the client which can be connected to different 
-servers. Also, in our system the server and worker program are installed/present in all the systems involved in the distributed system architecture.  
+servers. Also, in our system the server and worker program are installed/present in all the systems involved in the distributed system architecture.
+
+**Project Structure**-
+
+1) Server.erl 
+
+- start(): 
+Responsible for taking the user input. Depending on the user input, it calls the parent actor to start mining. It's also
+responsible for opening a TCP connection port which will be active for an infinite period of time. 
+
+- handler():
+ Responsible for acknowledging all client connection requests and output strings returned by the client.
+
+- print_output_events(): 
+  Responsible for printing the output strings mined by both client and server.
+
+
+2) Worker.erl
+
+- parent_actor(): 
+ Acts as a supervisor and is responsible for spawning child actors. Responsible for assigning work to the child whenever the child
+ finishes its work.
+
+- spawn_child_actors():
+ The child actors are mined here.
+
+- mine_coins():
+The mining logic of the program is present here.
+
 
 Project ReadMe Questions/Tasks: 
 1. Size of the work unit that you determined results in the best performance for your implementation and an explanation of how you determined it. The size of the work unit refers to the number of sub-problems that a worker gets in a single request from the boss. 
 
-   **Ans**. In our system, each worker has the following tasks/sub-problems
-
-    -> Connecting to the server (low load)
-
-    -> Receiving the input, i.e, no of Leading zeros (low load)
-    
-    -> Executing the parallelized mining process (high load)
-
-    -> Validating and returing the output to the server (low load)
-
-    After testing various design and work distributions between the server and the worker program and an exhaustive trial and error process, we believe for our application which uses TCP connection this is the most optimal structure of the worker program. So according the size of work here is 4.
-    As far as the no. of parallel processes are concerned currently the no. of processes spawned in each child
-   actor is Number of Cores * 32 as after exhaustive testing we concluded that the performance in converging at around
-   32 processes per core, with no further significant improvement.
+   **Ans**. In our system, each worker is assigned a task of mining. The worker then spawns several parallel processes to perform mining. 
+    As far as the no. of parallel processes are concerned, currently the no. of processes spawned in each worker
+    is Number of Cores * 32 as after exhaustive testing we concluded that the performance in converging at around
+   32 processes per core, with no further significant improvement. The reason being, we have one parent actor that acts as a supervisor and is responsible for assigning the work to its children. Whenever,
+    a child finishes its work(finds a matching coin), it reports back to the parent. The parent then assigns new work to the child. Adding more no.of child actors would lead to more no.of 
+  of messages in the parent's message queue. Since the parent works at its own pace, the no.of  messages in the queue would pile up and this will lead to the child actors sitting idle
+  resulting in improper CPU utilization.
 
 
 2. The result of running your program for input 4
