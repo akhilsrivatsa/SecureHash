@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%%% @author akhil
+%%% @author mayur
 %%% @copyright (C) 2022, <COMPANY>
 %%% @doc
 %%%
@@ -7,32 +7,34 @@
 %%% Created : 15. Sept 2022 5:01 PM
 %%%-------------------------------------------------------------------
 -module(server).
--author("akhil").
+-author("mayur").
 
 %% API
--export([start/0, listen_to_server_events/2, accept_state/2]).
+-export([start/0, print_output_events/3, accept_state/2]).
 -define(PORT, 9000).
 
 %Actively listen to all server events.
-listen_to_server_events(UserInput, Instance) ->
+print_output_events(UserInput, Instance, IP_address) ->
+  {Total_Wallclock_Time, _} = statistics(wall_clock),
+  {Total_Run_Time, _} = statistics(runtime),
   receive
     {print_output_event, HashString, ActorId} ->
-      {Total_Wallclock_Time, Wallclock_Time_Since_Last_Call} = statistics(wall_clock),
-      {Total_Run_Time, Time_Since_Last_Call} = statistics(runtime),
+      Total_Wallclock_TimeN = Total_Wallclock_Time + 1,
+      Total_Run_TimeN = Total_Run_Time + 1,
       if
-        Instance == "master" -> io:format("Server Printing HashValue ~s mined by actor: ~w with last call time metric ~p and total time metric ~p ~n", [HashString, ActorId, Time_Since_Last_Call / Wallclock_Time_Since_Last_Call, Total_Run_Time / Total_Wallclock_Time]);
+        Instance == "master" -> io:format("Server mined Coin : ~s mined by actor: ~w with performance metrics : ~p ~n", [HashString, ActorId, Total_Run_TimeN / Total_Wallclock_TimeN]);
         true ->
-          io:format("Sending Hash Value to Master ~s with last call time metric ~p and total time metric ~p ~n", [HashString, Time_Since_Last_Call / Wallclock_Time_Since_Last_Call, Total_Run_Time / Total_Wallclock_Time]),
-          {ok, Socket} = gen_tcp:connect({10,20,0,216}, ?PORT, [binary,{active, true}]),%Connect to Ip Address of the server
+          io:format("Sending Coin to Master ~s with performance metrics : ~p ~n", [HashString, Total_Run_TimeN / Total_Wallclock_TimeN]),
+          {ok, Socket} = gen_tcp:connect(IP_address, ?PORT, [binary,{active, true}]),%Connect to Ip Address of the server
           gen_tcp:send(Socket, HashString)
       end,
-      listen_to_server_events(UserInput, Instance);
+      print_output_events(UserInput, Instance, IP_address);
 
     {print_output_event_client, HashString} ->
-      {Total_Wallclock_Time, Wallclock_Time_Since_Last_Call} = statistics(wall_clock),
-      {Total_Run_Time, Time_Since_Last_Call} = statistics(runtime),
-      io:format("Server printing HashValue ~s mined by a client with last call time metric ~p and total time metric ~p ~n", [HashString, Time_Since_Last_Call / Wallclock_Time_Since_Last_Call, Total_Run_Time / Total_Wallclock_Time]),
-      listen_to_server_events(UserInput, Instance)
+      Total_Wallclock_TimeN = Total_Wallclock_Time + 1,
+      Total_Run_TimeN = Total_Run_Time + 1,
+      io:format("Server mined Coin : ~s mined by a client with performance metrics : ~p ~n", [HashString, Total_Run_TimeN / Total_Wallclock_TimeN]),
+      print_output_events(UserInput, Instance, IP_address)
   end.
 
 
@@ -47,7 +49,7 @@ handler(ASocket, UserInput) ->
         true ->
           io:format("Ping received from a client with Hashed String ~s ~n", [BinaryMsg]),
           server_event_listener_process ! {print_output_event_client, BinaryMsg} ,
-          gen_tcp:send(ASocket, "Thanks")
+          gen_tcp:send(ASocket, "Hash Received")
       end,
       handler(ASocket, UserInput)
   end.
@@ -56,7 +58,6 @@ handler(ASocket, UserInput) ->
 
 
 accept_state(LSocket, UserInput) ->
-  io:format("accepting state...."),
   {ok, ASocket} = gen_tcp:accept(LSocket),
   spawn(fun() -> accept_state(LSocket, UserInput) end),
   handler(ASocket, UserInput).
@@ -73,27 +74,26 @@ init_tcp(UserInput) ->
 start() ->
 
   % Reading input from user %
-  {ok, UserInput} = io:read("Enter the input ~n"),
+  {ok, UserInput} = io:read("Enter the input (Number of leading zeros if you are the server or The IP Address of the server if you are the client)"),
   IsInputIPAddress =  lists:member(hd("."), UserInput),
   if
     IsInputIPAddress == false ->
       LeadingZeroes = list_to_integer(UserInput),
-      {ok, Tcp_id} = init_tcp(LeadingZeroes),                    %Init TCP process.
-      io:format("My Tcp id ~w ~n", [Tcp_id]),
-      Pid = spawn(fun() -> listen_to_server_events(LeadingZeroes, "master") end),
+      {ok, _} = init_tcp(LeadingZeroes),                    %Init TCP process.
+      Pid = spawn(fun() -> print_output_events(LeadingZeroes, "master", "") end),
       register(server_event_listener_process, Pid),
       PID = spawn(worker, parent_actor, []),
       PID ! {LeadingZeroes, self()};
 
     true->
-      io:format("Ip Address is ~s ~n", [UserInput]),
-      {ok, Socket} = gen_tcp:connect({10,20,0,216}, 9000, [binary,{active, true}]),%Connect to Ip Address of the server
+      {ok, ParsedAddress} = inet:parse_address(UserInput),
+      {ok, Socket} = gen_tcp:connect(ParsedAddress, 9000, [binary,{active, true}]),%Connect to Ip Address of the server
       gen_tcp:send(Socket, "New Client Available"),
       receive
         {tcp,Socket,<<LeadingZeroes>>} ->
           io:format("Server sent zeroes to mine = ~w~n",[LeadingZeroes]),
 
-          Pid = spawn(fun() -> listen_to_server_events(LeadingZeroes, "slave") end),
+          Pid = spawn(fun() -> print_output_events(LeadingZeroes, "slave", ParsedAddress) end),
           register(server_event_listener_process, Pid),
           PID = spawn(worker, parent_actor, []),
           PID ! {LeadingZeroes, self()},
