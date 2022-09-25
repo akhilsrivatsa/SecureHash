@@ -13,6 +13,7 @@
 -import(string,[concat/2]).
 -export([parent_actor/0, spawn_child_actors/0]).
 -define( UFID,"mayur;").
+-define( PROCESSES, 32).
 
 generate_random_string() -> base64:encode_to_string(crypto:strong_rand_bytes(32)).
 
@@ -51,7 +52,7 @@ parent_actor() ->
           PID = spawn(?MODULE, spawn_child_actors, []),
           erlang:monitor(process, PID),    %% Parent acts as a supervisor and monitors its childs.
           PID ! {LeadingZeroes, self()}
-        end, lists:seq(1, Cores * 8)),
+        end, lists:seq(1, Cores * ?PROCESSES)),
       parent_actor();
 
     {hash_found, Hash_output, Sender, LeadingZeroes} ->

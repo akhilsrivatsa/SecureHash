@@ -32,7 +32,8 @@ is available for the next task. When a child process finishes its work, it repor
 parent process the output hash string and then the parent assigns new work to the child. With
 this local parallelism is achieved. The parent acts as a supervisor and is also responsible
 for restarting the child when it fails. Currently the no of processes spawned in each child
-actor is Number of Cores * 8. 
+actor is Number of Cores * 32 as after exhaustive testing we concluded that the performance in converging for around
+32 processes per core, with no further significant improvement. 
 
 **Client**
 
@@ -61,130 +62,184 @@ Project ReadMe Questions/Tasks:
     -> Validating and returing the output to the server (low load)
 
     After testing various design and work distributions between the server and the worker program and an exhaustive trial and error process, we believe for our application which uses TCP connection this is the most optimal structure of the worker program. So according the size of work here is 4.
+    As far as the no. of parallel processes are concerned currently the no. of processes spawned in each child
+   actor is Number of Cores * 32 as after exhaustive testing we concluded that the performance in converging at around
+   32 processes per core, with no further significant improvement.
 
 
 2. The result of running your program for input 4
 
 **Ans**.
 
+**Server Side**
+
 Eshell V13.0.4  (abort with ^G)
 
 1> server:start().
+
 Enter the input (Number of leading zeros if you are the server or The IP Address of the server if you are the client)
 
 "4".
 
 {4,<0.79.0>}
 
-2> accepting state....2> Server mined Coin : mayurzUcw87jjIYXA55R3XwGKpLK7J+TmT7qMvOBeB9fLnQs;    00006df5cab699646164b11c7e092a0efabe92cbe8a5e4021e12db29b1d2cb76 mined by actor: <0.107.0> with performance metrics (since last call) : 12.6 and (total) : 1.0351682919156968
+2> Server mined Coin : mayur;2RkKtozlCXknP7MLiUQcry83o+pW5+s8rKjUjFKou48    0000b51a1bf99ac32c3ff701a61cb563ddb9c93657e865dd23dc7b730bf764f5 mined by actor: <0.127.0> with performance metrics : 2.631368059530624
 
-2> Server mined Coin : mayurGwC+2E2YzOWbgkw+hKsYV4S/uo24mnub3wE+XYhQyIo;    000018a702763fec53021a8e93b4036f508116908383ba84936f5e60e8ad34de mined by actor: <0.163.0> with performance metrics (since last call) : 11.208955223880597 and (total) : 1.0778773259820813
+2> Server mined Coin : mayur;NLzOmq0eYi8n6YXaq0qNxxewsxFT7fjr+i6nW4Nz3ms    00007944540dce45e41ff7b7c8bf21076f8388c7d9f44175b2937fa9ecbb8054 mined by actor: <0.145.0> with performance metrics : 2.647320918542214
 
-2> Server mined Coin : mayurQQx6PRS3UQ9Rr3YEYQSIGbc7E1luWTUIkiwAZvXMvK4;    00006445c42a139e361c08a2a0e39273d9a50e79be579ce0d074664391c0ce2d mined by actor: <0.100.0> with performance metrics (since last call) : 13.731707317073171 and (total) : 1.1103056058996312
+2> Server mined Coin : mayur;QUdiyoVGHXHOXi7EmeLfjv2sF81gsu3bZVZ2/vA3Uro    00001fab6d0671ebc334528ca7dd82242ec6bceb28ed7b3105243f9ea4e60265 mined by actor: <0.101.0> with performance metrics : 2.697772220959309
 
-2> Server mined Coin : mayurkkuBcArzqVCMT4mzKBKQZdE5bCmvAG4BpLO+fAsJEfE;    0000732abb6b872b0857053a30f553e87f9a16f7673324756e3f6ac306ea9257 mined by actor: <0.92.0> with performance metrics (since last call) : 6.75 and (total) : 1.1201647117544298
+2> Server mined Coin : mayur;hIE9eZJNardNrV4LZBuSC9Iy2uceYfy0XE1mSZKeDYg    0000b08cafb7f9646569d11bc1372c5ba5c90b8152b7c0d3ffcf3501e5dad792 mined by actor: <0.94.0> with performance metrics : 2.7472862957937583
 
-2> Server mined Coin : mayurAfiifdoDN0mi4tCGhb67KxviM2uWNOoVRUmhv6a6BOc;    0000a8563b1e195ea4fc6cfcb9a44e702fb8143fa64596cd59c6bd1c2e3da445 mined by actor: <0.102.0> with performance metrics (since last call) : 12.413793103448276 and (total) : 1.1405705032386646
+2> Server mined Coin : mayur;h0IB4MS98TvDymcEHWeolmRHV2rf1Ku0tDcfNhACSDY    0000272cc1ec51a8f4b183fa96863d8b147f349ad906872374e2a5b055bc9db0 mined by actor: <0.85.0> with performance metrics : 2.7444933920704844
 
-2> Server mined Coin : mayurUaEHUVpsauU+3In9E5iPeQ2GFVR7c5rV8e27kCvxwrY;    0000add664db570109d195e54d7bcbbe15c37dd7b6754e56ceeef8f0ba37dced mined by actor: <0.157.0> with performance metrics (since last call) : 11.058823529411764 and (total) : 1.1615389396482068
+2> Server mined Coin : mayur;+vugyBJlZ+O0StwjYTqn7IEOUA1+s/NvwdhrvmiN4TY    00002832b20f6325e5c1c210a4f79369664b1fc44485fe34183674358732dc72 mined by actor: <0.115.0> with performance metrics : 2.7441834199231985
 
-2> Server mined Coin : mayurirnupLcDLyv5WpeWLZi0WKKhXO7YExHKJu00hDGvI7g;    000011da9c1f028e1097cc2c9f1f3b2c9421af7368c05feeb0520724aa857387 mined by actor: <0.103.0> with performance metrics (since last call) : 11.510204081632653 and (total) : 1.1929726715002789
+2> Server mined Coin : mayur;OefSCql4Pfn84GZIRtz3eWCaoQsHSDAwVUp3GI6EWXE    0000a29dedc2d14c5a751d554dcbb13e472f88182874e7a3bd1a47ea8412ca13 mined by actor: <0.136.0> with performance metrics : 2.743563685636856
 
-2> Server mined Coin : mayur96uXPFHMJfuRNoFfKbkYvM0NLGlP92bgqRSmcRmeqiQ;    0000a8a07cf3537322985bc1523b5f14e791a6462a6ef8c6608c0ba841f66663 mined by actor: <0.101.0> with performance metrics (since last call) : 0.5 and (total) : 1.1928987482959474
+2> Server mined Coin : mayur;WzFLkwFdOZBF8Gxrxuaqki8zJ5tfVh87Pcy/Zdrv0E8    0000343653757ef4f473ccedc5577402ae6a157bf4c1a086799bf6dfc6b4348b mined by actor: <0.170.0> with performance metrics : 2.8720062381641975
 
-2> Server mined Coin : mayurGV9Jozv2IbaZZm6/2Tr3+UfF65Z91VFxUy6gf2FIpq4;    0000a911b4f6010bba12ed5ea132789c4f672a9624fa77089be4e8f847f38335 mined by actor: <0.125.0> with performance metrics (since last call) : 37.6 and (total) : 1.2041878329822822
-            
-            |
+2> Server mined Coin : mayur;0E3R6Ccwr+QAHVG/Bdrl0mcxH9n+907+QADhEBVZNAk    000005c7a37bbf58a830c767fe1d99f0d310532cf5a2b116d69314a52ae7b71c mined by actor: <0.120.0> with performance metrics : 2.9170271769273435
 
-            |   so on...     
+2> Server mined Coin : mayur;hYF4Z4UaNOedNV9Ju/XAZjKZPNzwYQ9aj0N4jvOSDXo    00007d7e0fa2a3dcb6f2328dd6911630edbcf80f7e1fc93270056ba21f28c00c mined by actor: <0.166.0> with performance metrics : 3.011421041071821
 
-            |
+2> Server mined Coin : mayur;SfVJQGktVuE3q8JETqlsDlbG0KzCKlhBa01L0rNW/0Q    0000e2849704b6edfba0e5665a61ef0539277a536b82ced85f92dce42b9013c1 mined by actor: <0.136.0> with performance metrics : 3.022441160372195
 
-2> Server mined Coin : mayurung+eLBzJAPgAkGzwKxShuaki7LZPK6x/OPdgx1HfBE;    0000a8685929477fe15fbf5462aff7b2abde761747fee33b9f9c8d8d716c6d88 mined by actor: <0.98.0> with performance metrics (since last call) : 0.07692307692307693 and (total) : 5.3203029290566874
+2> Server mined Coin : mayur;RDfM6wo7yOJGYWGIdkGXglVVXt2wABdV/mgMhiOl5Vw    000013208f20acdac4d00be10f12d35dabc582694b957bef203107bfa3c522cc mined by actor: <0.154.0> with performance metrics : 3.070517711171662
 
-2> Server mined Coin : mayur8ph+0c2ykNz6ycI3kBRAoqpw12+epnEkAfxBknSJL7U;    0000f51ba613acb508d593ca2390bab09f7bb9d133e8d0db7935dcf4c1ff9851 mined by actor: <0.93.0> with performance metrics (since last call) : 12.857142857142858 and (total) : 5.328289571280226
+         |
+         |  so on.....
+         |
 
-2> Server mined Coin : mayurNqXU4GcHOqlCgQNwr4dz9WrvyRpR5mRn0N88s0t777Y;    00002fd4a5669760a1da410f3596ffcf9c9cabfa9e0408cab31ea9c77ffac84d mined by actor: <0.114.0> with performance metrics (since last call) : 15.695652173913043 and (total) : 5.337286000148225
+2> Server mined Coin : mayur;y0OZVvS6S7MgOSQJuzF993gNGFEq0DFJiXARQBV9RDs    0000e81b702a1d7a8f1c03ea1fd31375bbfaa4f3a299c5db2547941b79ad69f5 mined by a client with performance metrics : 10.996609003341852
 
-2> Server mined Coin : mayurNR/8O8xwLDOXXfYcFa+4PU2DK3TAJCZzbeUrFYvs3gA;    00009abded3bf5ff69e0f1cb2008a3f601796ff8af2a183b7d13ddaf6dbf34b7 mined by actor: <0.134.0> with performance metrics (since last call) : 9.838709677419354 and (total) : 5.358036076579734
+2> Server mined Coin : mayur;TuTC3DtQi3/pt5ccyCQ2MsYikfWQ8XJVBSsmhZXBeO8    0000965492b8f945133609cc4a94ac8c6b7fdda97bfff635ac1667806611165e mined by actor: <0.121.0> with performance metrics : 10.995704630156023
 
-2> Server mined Coin : mayurHsB4n5U76FNdHNcGqsMfFZgvycLnVmJKe3BKCdh9Z3E;    00002526684198ecd0968b12fc74fab507bfb5bb24307a3616d2291f504d2194 mined by actor: <0.97.0> with performance metrics (since last call) : 13.3 and (total) : 5.369898335052306
+2> Server mined Coin : mayur;fXUzMLcItHvaeM68QpXn5w3KW1j7ioHYkeQ7cJwHQvw    0000d32262e529e5121720b6a943692ffb7f02a7ba70e14bde9544daa75d50c1 mined by actor: <0.175.0> with performance metrics : 10.996338281096552
 
-2> Server mined Coin : mayurRO8UokHjnOaVkHAAWLUJ+3OYYUExDGPgVNI8g0mkigw;    0000bd5a3fdb02105da60a0379b2c4b1227b6c7b59462edf40dce1771ea1e579 mined by actor: <0.172.0> with performance metrics (since last call) : 0.125 and (total) : 5.368514085803719
+2> Server mined Coin : mayur;8CAJZCcu022HGMkSVvc+FiRfTQrCgw5Q+R+gW9dTQiM    000080735768a442dc44161147d3d6cc2c795a5b944680f5936a7c75a326f330 mined by actor: <0.92.0> with performance metrics : 10.99639520857295
 
-2> Server mined Coin : mayurmFzCynb6e97sifvU1JjxY764DdFx3JOJyrL9Tr/Tm18;    0000506e2550981b5804f4d2bcf9fc4feeb2b71a15a23c30dd333eea45d38bdc mined by actor: <0.154.0> with performance metrics (since last call) : 12.25 and (total) : 5.383846549570074
+2> Ping received from a client with Hashed String mayur;+Vhm+nA6Pmnv07NXrQlomk1Ey7DOUr/t0MELgadNlqU    00007f4607efe9a9b84fc9b0ba21bae62267486554ae7113858d4c964e17dcfc
 
-2> Server mined Coin : mayurLjSVK7KnvLQD/B4ueVwJ7/dArwup6ce7NQQDv8qM02I;    0000f706d3527e09ba6bd3de46647f1032bae7b064e89a063b21e9728cf273aa mined by actor: <0.85.0> with performance metrics (since last call) : 10.5 and (total) : 5.3873893724064486
+2> Server mined Coin : mayur;+Vhm+nA6Pmnv07NXrQlomk1Ey7DOUr/t0MELgadNlqU    00007f4607efe9a9b84fc9b0ba21bae62267486554ae7113858d4c964e17dcfc mined by a client with performance metrics : 10.997292975763017
 
-2> Server mined Coin : mayursngbodcoFbVH8351cTPIoChCvUDIXNBCBzj2J3GfCoQ;    0000fd1f303f3743c378e3a9306d1e874b01105ed6be06a41e384605b4f25f5b mined by actor: <0.119.0> with performance metrics (since last call) : 0.3333333333333333 and (total) : 5.3869937208533765
+2> Server mined Coin : mayur;COoBRsCXNjiGnLaMJcQh3T4SHq18LAbqxMjO79oRDIw    00004ba6b10ee6afb1365fc5bfe552f453f14266669f785ffeb69d342118fe91 mined by actor: <0.137.0> with performance metrics : 10.996255810855343
 
-2> Server mined Coin : mayuroCWXooaQAkMrzeoX4S/+Mmdet5O5oTcjFDCGsZLLawI;    00003fb15aad2f11756283a45451e2c4639387a57b9bc2fb9602438c95bb9fd9 mined by actor: <0.85.0> with performance metrics (since last call) : 13.093023255813954 and (total) : 5.399303391384051
+2> Ping received from a client with Hashed String mayur;uO9X02JhaG9li4YlCsaeHWXhoyU0NpZVL7Hs9ousnzc    0000cb6d2837d09b5486031b8e385fb14d2fabc0f53263ef5466bddb3d0d6e8e
 
-2> Server mined Coin : mayurfjFxYTDp6/kaRr2fBs87qtNZxOz1uNl+hsZwB0oCrKk;    0000a4479d5ccd168323d6602ca1a92dfda425dfa61ee5780a4ae9c31fab6416 mined by actor: <0.102.0> with performance metrics (since last call) : 21.0 and (total) : 5.404610929883077
+2> Server mined Coin : mayur;uO9X02JhaG9li4YlCsaeHWXhoyU0NpZVL7Hs9ousnzc    0000cb6d2837d09b5486031b8e385fb14d2fabc0f53263ef5466bddb3d0d6e8e mined by a client with performance metrics : 10.996893996227923
 
-2> Server mined Coin : mayurBQSuEYWMAc4Cqw6TNlSxppzJxb7XX8vp6Z3Jn4icx6Y;    0000bb2f0330114741d59447980732fe0afd2df73d38fb8bd3f1ffb4d91396b5 mined by actor: <0.168.0> with performance metrics (since last call) : 7.52 and (total) : 5.406708902479218
+2> Server mined Coin : mayur;qI/I/hxydCkJAAe9nkk2TfDuvsKgRadlXDxbuSyKus0    000089a18174a4d755f9b1de880c332942c8f6eb8d592143b2a1eb36365ecb3e mined by actor: <0.153.0> with performance metrics : 10.99683122782911
 
-2> Server mined Coin : mayur7jmEODQIlvgxdcTfUjFJ9RUN69q4vIDuA4YrO+tjn8Y;    00008c848bb37d05b12fa025f7730d60f91a4af262ac3b1d052963a02003723b mined by actor: <0.134.0> with performance metrics (since last call) : 11.822222222222223 and (total) : 5.427945685501533
+2> Server mined Coin : mayur;cOk96Bm5xdCVnbDmYylgQxkgDPiQdbZglGtEEzaBq4k    0000cd9ebd2f36c196657c59e927dca01c4beff2b22794db604fddf8e4934328 mined by actor: <0.114.0> with performance metrics : 10.996672784074194
 
-2> Server mined Coin : mayurjhi7w6t1FxIi8bDUgIwCh2NMJcKwWZMZpTJRx94rJw0;    000074b6794c4ee608196f1e083df2e897bef184943554dea34dcfe663a60690 mined by actor: <0.120.0> with performance metrics (since last call) : 10.734939759036145 and (total) : 5.444137127884125
+2> Ping received from a client with Hashed String mayur;JC1baxzea2NchLwcEz63pJwcaLqxUOfpRLthtgJOvhk    000049d41d4d322e9089354e1ae48d76fc778dd641e17664f983a1d5de77beed
 
-2> Server mined Coin : mayur0/kjWGX9XFVB3Fwaz/RGskJjz/mbzcfoxAedEGp1gok;    0000aecb5991f3f2135c1eb15fdafdba3d469521d494e7762e22dba23f49d854 mined by actor: <0.135.0> with performance metrics (since last call) : 11.988888888888889 and (total) : 5.465665469583198
+2> Server mined Coin : mayur;JC1baxzea2NchLwcEz63pJwcaLqxUOfpRLthtgJOvhk    000049d41d4d322e9089354e1ae48d76fc778dd641e17664f983a1d5de77beed mined by a client with performance metrics : 10.99790561980345
 
-2> Server mined Coin : mayurWV2hH0eA3vQEwKnzuZrnJslD9SnxLeM3rm9B0r9wkZc;    0000bcd0be16a526460e7d7b1a7fdf902def543f30702b55be867f9dec88f847 mined by actor: <0.156.0> with performance metrics (since last call) : 0.5 and (total) : 5.4654672083575155
+2> Ping received from a client with Hashed String mayur;3O1PlX1j6ij1Zhs7glLrd51m7aev6i3yThXJV0KT14s    0000efbd16a3a866a4b4c0cae4a3981bcaac56f3f3cad1608f646bd0c2602228
 
-2> Server mined Coin : mayurhHz9ODmaRqE2r36Va4nj5Z4nb7eeHN4802Nh3UuR7xY;    000033db01984f1aee5ece39ff22024eb7be26a00d7f701a9e8c69d3d4c2f2ff mined by actor: <0.99.0> with performance metrics (since last call) : 9.025 and (total) : 5.4707863947549535
+2> Server mined Coin : mayur;3O1PlX1j6ij1Zhs7glLrd51m7aev6i3yThXJV0KT14s    0000efbd16a3a866a4b4c0cae4a3981bcaac56f3f3cad1608f646bd0c2602228 mined by a client with performance metrics : 10.996904241609235
 
-2> Server mined Coin : mayurlLyyxoachuYcDuqzrbhx+5uJQOgzTArLUCqDTv74HVo;    0000b45dda1e0285c5940f372aaadcf3203e3abe83302d9ddc0a1b32997904a1 mined by actor: <0.90.0> with performance metrics (since last call) : 15.727272727272727 and (total) : 5.475033493862476
+2> Server mined Coin : mayur;awYZ3dz/faZHhhguIv32g2AuUoUQ9beQoXLuGs7xiEM    0000116bd66fdf7cc37fe9ff0d37d979d738e23b73b65081cd5bd503a5258e3e mined by actor: <0.142.0> with performance metrics : 10.99791312142412
 
-            |
+2> Server mined Coin : mayur;NuLTjVpZyPnwlEjLqnq5I4WtHzFwy1sw2rf5KnfJS5E    000073bcbc0580f1716e13d1520a5d6060d0c6023795cb0883efdada82e4f812 mined by actor: <0.143.0> with performance metrics : 10.997402906504634
 
-            |   so on...     
+2> Ping received from a client with Hashed String mayur;2fSCMuf2O/lBnRUgKSojZH2pkxLoyd9ZiQLuSagidLA    00008965b492d251f09fe441e0634fd061980fc5ec4405449011d1bcbcad29f3
 
-            |
+2> Server mined Coin : mayur;2fSCMuf2O/lBnRUgKSojZH2pkxLoyd9ZiQLuSagidLA    00008965b492d251f09fe441e0634fd061980fc5ec4405449011d1bcbcad29f3 mined by a client with performance metrics : 10.998019053485557
 
-2> Server mined Coin : mayurkrT4xwIHcczfj1H+HWaBhnlWJofvPNa8NgPc7eWg05I;    000079fb1f251561ae3093984235849e826e70569cb4468c9fa615674201de9b mined by actor: <0.116.0> with performance metrics (since last call) : 11.058823529411764 and (total) : 6.087221425778704
+2> Server mined Coin : mayur;BxhpXHbzq7tJQ+riSOx+9GDzB2Ctc9BDylUUCI/7bMs    0000cb7c0b7d2b64d787586c774de89588c857ad6d9884265b5ff9966f20ebd0 mined by actor: <0.120.0> with performance metrics : 10.998068254990342
 
-2> Server mined Coin : mayurpN1lIgnKn2W46QDKt/+k4Cb/+6qPfoIf7rIlHwiCMB8;    000073625eafa841b23bcadc45247d46ae0090a710b908829c4114aab46b831a mined by actor: <0.141.0> with performance metrics (since last call) : 8.238095238095237 and (total) : 6.08885777546236
+2> Server mined Coin : mayur;gsCTXmP2QIkb0rXICmfbQXCl7X3djECoMei1JEslBE4    000010c1d952fbfd4890021bc7171401470ccaa7df70369bd505db4531d24435 mined by actor: <0.149.0> with performance metrics : 10.99846186114801
 
-2> Server mined Coin : mayur2DDsKJUWDIPJwG/34V8+fLf34JGl41Ky7KZCZS3howc;    00000f7b42fa8c1f9ebfd699576126f2ca523f82f259d080e4d630b9011524bf mined by actor: <0.172.0> with performance metrics (since last call) : 12.533333333333333 and (total) : 6.0921694981448935
+2> Server mined Coin : mayur;qzouqzncLfhoJKsMstRkN03Ye4SOodrJHgmB5a6Hj2M    0000fc62bad045f8018947f83a60bc5c30dd35971e21715b69a077ad2a4eccd1 mined by actor: <0.126.0> with performance metrics : 10.997973006032055
 
-2> Server mined Coin : mayurWXxvWYiOjlIhbRehTo2v4JOoLoJaI8hOXwancxEojyk;    0000492ac5a861537b5d366b5b81d86bd5376483bf9ab38e21931c5536c8e17a mined by actor: <0.171.0> with performance metrics (since last call) : 8.025641025641026 and (total) : 9.56321876562534
+2> Server mined Coin : mayur;ZimUqR5CUsIAx43+ZfsSuaj0l4JKL6D/4dN8xgCPA9E    000087f107157c82da6731dc7b336aeedfde88f8fbee15976f2a2688a75afb6c mined by actor: <0.118.0> with performance metrics : 10.998141043112424
 
-2> Server mined Coin : mayurLi2UNnl8vIDIJsysUHhC3f3Q3QtT3XPLsTE1HYSZiAM;    00004fbb3ebc5f4270a733dd2ba78740ba8c86da03f51ae5255dca6af99a3351 mined by actor: <0.90.0> with performance metrics (since last call) : 9.145833333333334 and (total) : 9.563094138736487
+2> Server mined Coin : mayur;JDjvGKEyK2Vo3dsXnlczizh07gAGoYEXTzEhP0Xxbpo    0000fb0e426385f96e4259895ffac4cdb2aae5bacf32d6a6f43cd0fc6229a3ab mined by actor: <0.138.0> with performance metrics : 10.99747084838365
 
-2> Server mined Coin : mayurEUY6KUT+wUxbzmC7Cwx/e3pT4SA6VXjd4qp1scW52xY;    000081f45760f48e9e33cceaebc5fae7bb73871c04495422304e35df812e3fa9 mined by actor: <0.136.0> with performance metrics (since last call) : 9.105263157894736 and (total) : 9.563092664805621
+2> Server mined Coin : mayur;qM/Ta5v8tZ832W/5JhPV4pEoj5vssQy6S0NWdYWcEL4    00003d017e782b226d765e753b3bc7b920ad157e49e12443929fa28261260133 mined by actor: <0.173.0> with performance metrics : 10.99854818558097
 
-2> Server mined Coin : mayurD8jAcBjD8qUhXjWOO3w7VSl5ZgPDirU1vRrmtpvMt5I;    00001c0ca8a8b09f05802ab2aed41338900932e5f3a781a015251f636869c094 mined by actor: <0.123.0> with performance metrics (since last call) : 17.09090909090909 and (total) : 9.564085019495401
+2> Server mined Coin : mayur;wN3btpmgjgr1v1fzhV7lNAat+0HuRxHPWoEP8bxTFYk    0000080a7a627c3a82a39b1c11a1e6a581276c1f1b6742474b512528780bb57b mined by actor: <0.131.0> with performance metrics : 10.998541857074086
 
-2> Server mined Coin : mayurXsnmvwrOTVOrhogDiwPDCwl7BcKtJOOOWxKj1W9SRXY;    00001c959ef04bdc237da7c7f2dbd08d07362d348269adfa525958dc62dd67c6 mined by actor: <0.161.0> with performance metrics (since last call) : 13.142857142857142 and (total) : 9.566353334491144
+2> Server mined Coin : mayur;RGr0r23KWpeBccrmW+FtYsBmDuupep0+qkQkBXSltYA    00009f368251b91a29f6ffec5aa88911501d8c94141a9d690edb804b32a53711 mined by actor: <0.118.0> with performance metrics : 10.998940123977603
 
-2> Server mined Coin : mayurMNeIt9mPeaYSUW+x7jbITta1gO5QjzJqtSmRBIn2BKE;    000064a8fefe8a78667f6c0012999f6d8d9ac53848a6bcb75c59fd3faef9f19a mined by actor: <0.179.0> with performance metrics (since last call) : 0.1111111111111111 and (total) : 9.565522705565686
+2> Server mined Coin : mayur;p6YQrVw+27oqC1olhSfCzF71D1N7XwYIXFfSqEDYYJo    0000c01e831bacc980ac88b06cc05a90a23d70b912b8de093f99b13e6d915b51 mined by actor: <0.92.0> with performance metrics : 10.999330739950642
 
-2> Server mined Coin : mayur3DNn2z1a+pvbbaOMEGCQNaWQ6DIZu8SdxXHDw4nyPUs;    0000a0d05fb2deaefa2ba5cbaeb97a5df1ac8adb95e7c8fa472443737c4f192c mined by actor: <0.137.0> with performance metrics (since last call) : 10.8989898989899 and (total) : 9.567046859075829
+2> Ping received from a client with Hashed String mayur;15qAqD+zZZ3Scma47xy8kGQmt/xN12iKARKllLNX2oE    000098f7f238fb15112b69698241ecc02395bd4bef4448e2b53128ca3c43c498
 
-2> Server mined Coin : mayurHwViZxcFSnJesHwVBMQ6v0PXkZitu9GSGS4IaKyQHUc;    0000b0a16204c09c6aba0af122087d0d8d17d96f131dc06c9e8453f1c3a25e01 mined by actor: <0.120.0> with performance metrics (since last call) : 12.285714285714286 and (total) : 9.56837713356814
+2> Server mined Coin : mayur;15qAqD+zZZ3Scma47xy8kGQmt/xN12iKARKllLNX2oE    000098f7f238fb15112b69698241ecc02395bd4bef4448e2b53128ca3c43c498 mined by a client with performance metrics : 10.999087184346953
 
-2> Server mined Coin : mayurmUoc2PxDZvNpBF3QWXC6/DyCutMGsxpuC+3QDFwdWmE;    00003ec0ea8b6aa3b6ef81a94c8ce065d43cab30a6c6ecbbd0cc65c1dde4c8fa mined by actor: <0.91.0> with performance metrics (since last call) : 0.5 and (total) : 9.568273440547921
+2> Server mined Coin : mayur;SVOL80M79TKu2HJ0xgVYYEkSKv5j0fiVj1y5uo7Ejx4    00001eabbdb2787f42ba64c6b2439b051e3b737372ae971cc77a39ac185c52a6 mined by actor: <0.88.0> with performance metrics : 10.999909450573943
 
-2> Server mined Coin : mayur3PAgOi0eeOUe5MjWzhqwShVQxmsXPDBEOjqXU7hF+FI;    00003e81189c7e47501b71b904230c1a329c25a247ed4e05338356cad713435d mined by actor: <0.84.0> with performance metrics (since last call) : 23.625 and (total) : 9.569584863951107
+2> Server mined Coin : mayur;gnx49xWCRa+DAKM2H1jinItcuigU6F0sEEQxjKzNswU    000002ac4420e2af189a9a8f6241011bad468afb8a6ca9741a2272661de8b510 mined by actor: <0.106.0> with performance metrics : 10.999449761098806
 
-2> Server mined Coin : mayuru/HxXFykSA6BzE7v6hgvxCmIWp15xCHVk8nRSN3aXXc;    00004055f2036433bea887a4ed5bdd647bc0e8436547593aa745d86393678ff9 mined by actor: <0.147.0> with performance metrics (since last call) : 10.255555555555556 and (total) : 10.570345992292037
+2> Server mined Coin : mayur;hvymtXPTMGX3z1V3ubAzY/I9+MluPzEpSOCKt0kvEjQ    00001fd53dc0eaffea30d8fcb27322413e35af2dc4f8e0251a24979d922f7230 mined by actor: <0.88.0> with performance metrics : 11.000299413706184
 
-2> Server mined Coin : mayurZT1pb8rRBizXsZjWEmg/fNUb9qbR51jn/3NRwP2URjY;    0000176e6dbbda13f4be553ae23bc0db58289749045b56ecd02370b19495ecf8 mined by actor: <0.102.0> with performance metrics (since last call) : 13.7 and (total) : 10.572226250121739
+2> Server mined Coin : mayur;YOtYouocCj4tOOTFqvKoIVgzVMDSFwcqK/BYPGc49XI    000009f599e490ec71da61129ffb5e48fe1f41bd1fe596ba921379d7416cc805 mined by actor: <0.102.0> with performance metrics : 11.001787639550656
 
-2> Server mined Coin : mayurXx6XpaPUhk5EqRtxkuhL8q+eBAB2azXJWqVWlg8L50c;    000004baa743efc87cb09511f9b628b4f1f6e20e0dc64868f3dce2731dc885d1 mined by actor: <0.139.0> with performance metrics (since last call) : 9.614035087719298 and (total) : 10.572344728389588
+2> Ping received from a client with Hashed String mayur;f+LKZbYGI/CMMt1H4Bbme2SCX/7RGK9zr3JnLb2A7gE    00007dae9597667b35548bfc9495aea693b5f8a0853dca0ba9a748523cdd1875
 
-2> Server mined Coin : mayurDvSyL/CgjSnLDXh1esvjNnFG7UcesTdBieRR+DLzYy8;    000010ba7ef867a86c3cea8781540a2171c09752d4794767a3bb4b336d230cfd mined by actor: <0.112.0> with performance metrics (since last call) : 13.846153846153847 and (total) : 10.573638801193617
+2> Server mined Coin : mayur;f+LKZbYGI/CMMt1H4Bbme2SCX/7RGK9zr3JnLb2A7gE    00007dae9597667b35548bfc9495aea693b5f8a0853dca0ba9a748523cdd1875 mined by a client with performance metrics : 11.001634589300744
 
-2> Server mined Coin : mayurQCDEwY6wCFzXPbNYP3Xq8wlBRHl+0NgWG0+GDucGz1E;    00006cf34e59ea5dd415ee74ca8814605f09677de2918ab4d41fec239844e8f7 mined by actor: <0.166.0> with performance metrics (since last call) : 11.380952380952381 and (total) : 10.576599235734795
+2> Server mined Coin : mayur;W1Pl3oiH6YPDvRkhjoYkn2ZTCSZdJ5W0vnAoZK71lBs    0000b42b7d837357533580d117921bc3481d3832c40142a5b9a0952c44ea266d mined by actor: <0.89.0> with performance metrics : 11.001606587705083
 
-2> Server mined Coin : mayurAVyOZH7tSNZsuCk6oPatiG3iUt3M+ZyGD9qe1NELpW4;    00009a1659547ed2837da163e9cd3cb337efac437220b60434ec83afd59f73c5 mined by actor: <0.97.0> with performance metrics (since last call) : 0.5 and (total) : 10.57649586027483
+2> Server mined Coin : mayur;xAQdD8YRAul2IGDo6+v//9xklRCfBGO+uXFuTZRapj0    000035b9984094f666c40e021a5f1f5bfc9cad5229aa9f9346c5a463c6f983cc mined by actor: <0.149.0> with performance metrics : 11.001842657877535
 
-2> Server mined Coin : mayurygDx5a/STJcQxZ4a2/TjuElUIPE3VTbCczvSwWvMqeE;    0000cd698c7c10fd3424e8f3decaafe946abd4f246baa5bcc256a07d6c5cba07 mined by actor: <0.114.0> with performance metrics (since last call) : 31.333333333333332 and (total) : 10.577997495790337
+2> Server mined Coin : mayur;vBY+H4+MR2bRbXOmzQLVcUyHNFnSv5HJ558xU+hsyAU    0000fa619757edfac18045afa64eedd1b23fb35ce3d61056da85864956abd52f mined by actor: <0.151.0> with performance metrics : 11.001619922966754
+
+2> Server mined Coin : mayur;krZaZYLaHzp47h7juCp1EJjLIpp0YwNAs0vdiv+kmto    0000dc5a14b1d048bd5bcecc056c9835c4f2cad72ec9cbd17da4c56706ea849b mined by actor: <0.166.0> with performance metrics : 11.002333689869285
+
+2> Ping received from a client with Hashed String mayur;WuA25N5QEU73csJ13UmVL7pLMsNVY7p4Y0GOFbNFowg    000062a3888d17c06a5927b0a7adf3323d218913ed5d35be88bf829aba9f1f5d
+
+2> Server mined Coin : mayur;WuA25N5QEU73csJ13UmVL7pLMsNVY7p4Y0GOFbNFowg    000062a3888d17c06a5927b0a7adf3323d218913ed5d35be88bf829aba9f1f5d mined by a client with performance metrics : 11.002693509198195
 
 2> *** Terminating erlang (nonode@nohost)
 
-Process finished with exit code 0
+**Screenshot of server console**
+![](server side.jpg)
+
+**Client Side**
+
+2> Sending Coin to Master mayur;fyGbStNDg7gk6Tmll8boXxCX5hyEsDyM19rnztx0qyw    00005b03b057bfed86bb8106a77a7b0e6c604c4be4a207f3356511c457a20523 with performance metrics : 4.614587185902317
+
+2> Sending Coin to Master mayur;jDTzvbUtHNhyYXNUuEQdbRBXK93V6qOTnX+IvdM1B/s    0000355b0ae2b80091bc9aa940b516af06dfbf76ea635ba81595e4d3ecb80dcb with performance metrics : 4.615892239786045
+
+2> Sending Coin to Master mayur;TJ3m2iM+WE4DneOUWWPZqt4dgpY09Ha7QvctU+UTBdk    00008853d8449c81fc21dc4b6a7fcb13ac15184027663b5cd2507ea0b4402e4b with performance metrics : 4.622007701068387
+
+2> Sending Coin to Master mayur;pM5dXnEkD1Bw1WYnP1N3IVHh7DLeNG2Ygz8yLANn7pU    0000850aaeaaec407c84436a594732746c52d7852c700d9b0e0cc7093fc9b713 with performance metrics : 4.622488043466473
+
+2> Sending Coin to Master mayur;3VRlLGY4ZXM2fEJTL1CW6CzBF9TSbdQgnRH2sVXMZoE    0000ccd619e7671c2f1679f989d4a2fa09b3452eda6e863ec3d2657034daa0f3 with performance metrics : 4.6244852845563695
+
+2> Sending Coin to Master mayur;aXPyCIWNidMX9gokHYE0l6vNST9mS1LpONQM8aI0ICM    0000c6ba41da3d138f7c76bf89f27fd2cb0b32cfa73db4329fea7df45532e66a with performance metrics : 4.628666291745977
+
+2> Sending Coin to Master mayur;s330tODTX7Fr2yGagPAqLYT0oqaXpbQboznMcuQYaNo    0000384fe1eab8fd5cbc9946fbfbc0d42714ba59ff25d40aada9e34ed3e44216 with performance metrics : 4.629867883322161
+
+2> Sending Coin to Master mayur;F7xFoQAWd65yE1Ugp9s49PQpQIWn5GGOAd78RohqK88    00003d0889d7c471fd952d950aa63952fb89b8eded9f5c2c7e6e12a976f646ab with performance metrics : 4.636775313487228
+
+2> Sending Coin to Master mayur;EHzbtdFYRZdQRWj+OXK0YhJ4lOKLTWnvbb/7ncP+Cvw    000055c59180cf1662ebdc9f8b34ea202542890a4baea48307f09b700dec110b with performance metrics : 4.643310389331039
+
+2> Sending Coin to Master mayur;yPanapf148MYBP1vRFYkd+GtBe/0ea7mtXbDBrEAnVo    000025a1b053c91a91df47e0d7b28cf6c6046f73eab65eb147e7cc4f9c963940 with performance metrics : 4.64973012415362
+
+2> Sending Coin to Master mayur;JSWJRyYN+WgvK7tKyEIlpxsy2mxX9BBc2g1IbfnB9ts    00004ae6d7a4430849b22a49da2ddb8ea2b67ceddf7a38833509bd0218e1d9c7 with performance metrics : 4.6499013172008405
+
+2> Sending Coin to Master mayur;BVREi2OOsGme1jLuF3/R/0vBpPRiudMsuzg3wV13v+0    00002209a7b02ca22a0b4d334662ddd8ab2d13df8b4f0448dc9ee0da9e5fcebb with performance metrics : 4.655641398792963
+
+2> Sending Coin to Master mayur;B0WTG/J+EcStc/He83BSq8PScbwnqT6hNNehAJOOpdo    0000282cd994950a0165139a11045f372dbcea402e47a10a5d1af1bf52b2370a with performance metrics : 4.659693136165484
+
+2> Sending Coin to Master mayur;fhj7qzoSTE9kLywX6EA9seXiUp2jmfXdh7ZtuFIpPFs    0000f62e4dd1a39332bb2cf6d4e3ed9e2a20eade3654d2cefd74f8f753d7db44 with performance metrics : 4.65979260335124
+
+2> Sending Coin to Master mayur;9YPVlBfVZ2zzul7fugqpJYVvYKbda1tTkEavdks4cW4    0000aedd69c97d01fe377af7817b069d0dc00d37ab28379e2eca28a8530ba6e1 with performance metrics : 4.662259358859436
+
+2> Sending Coin to Master mayur;1TP6wfm0L/m6aq5uhTkGrNwG/9Iyrnw9aHQ347eIKpE    000083bd99f2e4514dc18c79c7314afba8778fd1c1cd62d86bf9230661e936e9 with performance metrics : 4.662615635769998
+
+2> Sending Coin to Master mayur;bxjSxWoTFPEgaU0H734QSem1AWB2dnm+CD+kvkuf3w4    0000d5681ad4f845359d29b167038cdf46ac5baf71bee78fdf139fbf750667fa with performance metrics : 4.665792727117704
+
+2> Sending Coin to Master mayur;D07otGn50MMt3OZN7ILfQB7ns/Q6BZcYmvc5kd0B0RY    0000b735fbd0b09a0caad5652626574e62c9f13f60fcf13e05e97b80329b8044 with performance metrics : 4.677934907925494
+
+**Screenshot of client console**
+![](client side.jpeg)
 
 3. The running time for the above is reported by time for the above and report the time.  The ratio of CPU time to REAL TIME tells you how many cores were effectively used in the computation.  If you are close to 1 you have almost no parallelism (points will be subtracted).
 
@@ -195,8 +250,8 @@ be greater than 10.5 depending on the time the program is run.
 
 4. The coin with the most 0s you managed to find.
 
-   **Ans**. Our application returns all the coins with leading zeros equal to the  input, hence all the coins mined will contain the no of leading
-   zeros given in the input.
+   **Ans**. Our application returns all the coins with leading zeros equal to the input, hence all the coins mined will contain the no of leading
+   zeros given in the input. The highest input successfully hashed was 7.
 
 
 5. The largest number of working machines you were able to run your code with.
