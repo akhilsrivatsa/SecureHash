@@ -15,27 +15,25 @@
 
 %Actively listen to all server events.
 print_output_events(UserInput, Instance, IP_address) ->
+  {Total_Wallclock_Time, _} = statistics(wall_clock),
+  {Total_Run_Time, _} = statistics(runtime),
   receive
     {print_output_event, HashString, ActorId} ->
-      {Total_Wallclock_Time, Wallclock_Time_Since_Last_Call} = statistics(wall_clock),
-      {Total_Run_Time, Time_Since_Last_Call} = statistics(runtime),
-      {Total_Wallclock_TimeN, Wallclock_Time_Since_Last_CallN} = {Total_Wallclock_Time + 1, Wallclock_Time_Since_Last_Call + 1},
-      {Total_Run_TimeN, Time_Since_Last_CallN} = {Total_Run_Time + 1, Time_Since_Last_Call + 1},
+      Total_Wallclock_TimeN = Total_Wallclock_Time + 1,
+      Total_Run_TimeN = Total_Run_Time + 1,
       if
-        Instance == "master" -> io:format("Server mined Coin : ~s mined by actor: ~w with performance metrics (since last call) : ~p and (total) : ~p ~n", [HashString, ActorId, Time_Since_Last_CallN / Wallclock_Time_Since_Last_CallN, Total_Run_TimeN / Total_Wallclock_TimeN]);
+        Instance == "master" -> io:format("Server mined Coin : ~s mined by actor: ~w with performance metrics : ~p ~n", [HashString, ActorId, Total_Run_TimeN / Total_Wallclock_TimeN]);
         true ->
-          io:format("Sending Coin to Master ~s with performance metrics (since last call) : ~p and (total) : ~p ~n", [HashString, Time_Since_Last_CallN / Wallclock_Time_Since_Last_CallN, Total_Run_TimeN / Total_Wallclock_TimeN]),
+          io:format("Sending Coin to Master ~s with performance metrics : ~p ~n", [HashString, Total_Run_TimeN / Total_Wallclock_TimeN]),
           {ok, Socket} = gen_tcp:connect(IP_address, ?PORT, [binary,{active, true}]),%Connect to Ip Address of the server
           gen_tcp:send(Socket, HashString)
       end,
       print_output_events(UserInput, Instance, IP_address);
 
     {print_output_event_client, HashString} ->
-      {Total_Wallclock_Time, Wallclock_Time_Since_Last_Call} = statistics(wall_clock),
-      {Total_Run_Time, Time_Since_Last_Call} = statistics(runtime),
-      {Total_Wallclock_TimeN, Wallclock_Time_Since_Last_CallN} = {Total_Wallclock_Time + 1, Wallclock_Time_Since_Last_Call + 1},
-      {Total_Run_TimeN, Time_Since_Last_CallN} = {Total_Run_Time + 1, Time_Since_Last_Call + 1},
-      io:format("Server mined Coin : ~s mined by a client with performance metrics (since last call) : ~p and (total) : ~p ~n", [HashString, Time_Since_Last_CallN / Wallclock_Time_Since_Last_CallN, Total_Run_TimeN / Total_Wallclock_TimeN]),
+      Total_Wallclock_TimeN = Total_Wallclock_Time + 1,
+      Total_Run_TimeN = Total_Run_Time + 1,
+      io:format("Server mined Coin : ~s mined by a client with performance metrics : ~p ~n", [HashString, Total_Run_TimeN / Total_Wallclock_TimeN]),
       print_output_events(UserInput, Instance, IP_address)
   end.
 
@@ -60,7 +58,6 @@ handler(ASocket, UserInput) ->
 
 
 accept_state(LSocket, UserInput) ->
-  io:format("accepting state...."),
   {ok, ASocket} = gen_tcp:accept(LSocket),
   spawn(fun() -> accept_state(LSocket, UserInput) end),
   handler(ASocket, UserInput).

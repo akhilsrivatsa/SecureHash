@@ -14,7 +14,6 @@
 -export([parent_actor/0, spawn_child_actors/0]).
 -define( UFID,"mayur;").
 
-
 generate_random_string() -> base64:encode_to_string(crypto:strong_rand_bytes(32)).
 
 mine_coins(LeadingZeroes, Parent) ->
